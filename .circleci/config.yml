@@ -1,6 +1,8 @@
 version: 2
 jobs:
   test:
+    working_directory: ~/propelmarketing/referer-parser/dotnet
+
     environment:
       PATH: ${PATH}:~/.dotnet/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
@@ -31,6 +33,8 @@ jobs:
           name: Push to NuGet
           command: dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
   release:
+    working_directory: ~/propelmarketing/referer-parser/dotnet
+
     docker:
       - image: microsoft/dotnet:2.1-sdk-stretch
 
