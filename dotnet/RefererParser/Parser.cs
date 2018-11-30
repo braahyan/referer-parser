@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
 
@@ -12,9 +14,9 @@ namespace RefererParser
         private Parser(IEnumerable<string> srcString = null, bool ignoreResource = false) : base(srcString,
             ignoreResource)
         {
-            
+
         }
-        
+
         private static readonly Parser<RefererMedium> _Parser;
 
         static Parser()
@@ -30,14 +32,14 @@ namespace RefererParser
     /// <summary>
     /// Parse URL referers
     /// </summary>
-    public class Parser<T>  where T: struct, IComparable, IFormattable, IConvertible
+    public class Parser<T> where T : struct, IComparable, IFormattable, IConvertible
     {
 
         private readonly T _internalMedium;
         private readonly T _searchMedium;
         private readonly T _unknownMedium;
-        
-        public Parser(IEnumerable<string> srcString=null, bool ignoreResource=false)
+
+        public Parser(IEnumerable<string> srcString = null, bool ignoreResource = false)
         {
             var mySrcString = new List<string>();
             if (srcString != null)
@@ -46,13 +48,18 @@ namespace RefererParser
             }
             if (!ignoreResource)
             {
-                mySrcString.Add(Encoding.UTF8.GetString(Resources.referers));
+                var assembly = Assembly.GetAssembly(typeof(Parser));
+                var resourceStream = assembly.GetManifestResourceStream("RefererParser.Resources.referers.yml");
+                using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                {
+                    mySrcString.Add(reader.ReadToEnd());
+                }
             }
-            this.RefererCatalog = new Referers<T>(mySrcString);
+            RefererCatalog = new Referers<T>(mySrcString);
             var media = MakeMedia(RefererMedium.Internal, RefererMedium.Search, RefererMedium.Unknown);
-            this._internalMedium = media.Item1;
-            this._searchMedium = media.Item2;
-            this._unknownMedium = media.Item3;
+            _internalMedium = media.Item1;
+            _searchMedium = media.Item2;
+            _unknownMedium = media.Item3;
         }
 
         public Referers<T> RefererCatalog { get; set; }
@@ -103,7 +110,7 @@ namespace RefererParser
 
                     if (first.Medium.Equals(_searchMedium))
                     {
-                        term = ExtractSearchTerm(refererUri, first.Parameters); 
+                        term = ExtractSearchTerm(refererUri, first.Parameters);
                     }
 
                     return new Referer<T>
@@ -115,8 +122,8 @@ namespace RefererParser
                 }
             }
         }
-        
-        private Tuple<T,T,T> MakeMedia(RefererMedium @internal, RefererMedium search, RefererMedium unknown)
+
+        private Tuple<T, T, T> MakeMedia(RefererMedium @internal, RefererMedium search, RefererMedium unknown)
         {
             T convertedInternal;
             T convertedSearch;
@@ -145,7 +152,7 @@ namespace RefererParser
 
             throw new ArgumentException(errorString.ToString());
         }
-        
+
         private static bool TryMakeMedium(RefererMedium medium, out T result)
         {
             return Enum.TryParse(medium.ToString(), true, out result);

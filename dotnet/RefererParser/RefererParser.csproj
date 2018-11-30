@@ -20,11 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Resources\referers.yml" />
+    <EmbeddedResource Include="Resources\referers.yml" />
   </ItemGroup>
-
-  <Target Name="BeforeBuild">
-    <Delete Files="Resources\referers.yml" />
-    <Copy SourceFiles="..\..\resources\referers.yml" DestinationFolder="Resources" OverwriteReadOnlyFiles="true" />
-  </Target>
 </Project>
