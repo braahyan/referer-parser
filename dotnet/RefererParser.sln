@@ -5,13 +5,6 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefererParser", "RefererParser\RefererParser.csproj", "{E27751F2-DCFA-4C92-BD14-F8515862FCFA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BC20C50D-5130-4DCF-9601-EDCBA57CAA69}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefererParser.Tests", "RefererParser.Tests\RefererParser.Tests.csproj", "{89D0ACFC-93E0-41AF-9B03-DD2F1FC44FD8}"
 EndProject
 Global

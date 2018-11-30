@@ -1,7 +1,7 @@
 version: 2
 jobs:
   test:
-    working_directory: ~/propelmarketing/referer-parser/dotnet
+    working_directory: ~/propelmarketing/referer-parser
 
     environment:
       PATH: ${PATH}:~/.dotnet/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
@@ -17,6 +17,7 @@ jobs:
       - run:
           name: Sonar Start
           command: |
+            cd dotnet
             PRNUM="$(cut -d'/' -f7 <<< "$CIRCLE_PULL_REQUEST")"
             dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="Github" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser"
       - run: 
@@ -39,6 +40,7 @@ jobs:
 
     steps:
       - checkout
+      - run: cd dotnet
       - run:
           name: Pack
           command: dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
