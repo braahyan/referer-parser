@@ -36,7 +36,7 @@ jobs:
           command: cd dotnet && dotnet pack -c Release --include-symbols --version-suffix ${PACKAGE_VERSION}-RC-${CIRCLE_BUILD_NUM}
       - run:
           name: Push to NuGet
-          command: cd dotnet && dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
+          command: cd dotnet && dotnet nuget push ./RefererParser/bin/Release/* -k ${NUGET_KEY} -s ${NUGET_SRC}
   release:
     working_directory: ~/propelmarketing/referer-parser/dotnet
 
@@ -51,7 +51,7 @@ jobs:
           command: cd dotnet && dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
       - run: 
           name: Push to NuGet
-          command: cd dotnet && dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
+          command: cd dotnet && dotnet nuget push ./RefererParser/bin/Release/*.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
 workflows:
   version: 2
   test-pr:
