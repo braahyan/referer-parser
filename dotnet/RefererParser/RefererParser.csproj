@@ -27,8 +27,4 @@
     <Delete Files="Resources\referers.yml" />
     <Copy SourceFiles="..\..\resources\referers.yml" DestinationFolder="Resources" OverwriteReadOnlyFiles="true" />
   </Target>
-
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
-    <Reference Include="System.Web" />
-  </ItemGroup>
 </Project>
