@@ -11,7 +11,6 @@ jobs:
 
     steps:
       - checkout
-      - run: cd dotnet
       - run:
           name: Install SonarScanner
           command: dotnet tool install -g dotnet-sonarscanner
@@ -40,7 +39,6 @@ jobs:
 
     steps:
       - checkout
-      - run: cd dotnet
       - run:
           name: Pack
           command: dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
