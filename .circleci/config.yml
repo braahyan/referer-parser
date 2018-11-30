@@ -12,6 +12,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Java
+          command: |
+            apt-get update
+            apt-get install -y openjdk-8-jre
+      - run:
           name: Install SonarScanner
           command: dotnet tool install -g dotnet-sonarscanner
       - run:
