@@ -22,16 +22,16 @@ jobs:
             dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="Github" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser"
       - run: 
           name: Build and Test
-          command: dotnet test
+          command: cd dotnet && dotnet test
       - run:
           name: Sonar End
-          command: dotnet-sonarscanner end  
+          command: cd dotnet && dotnet-sonarscanner end  
       - run: 
           name: Package RC
-          command: dotnet pack -c Release --include-symbols --version-suffix ${PACKAGE_VERSION}-RC-${CIRCLE_BUILD_NUM}
+          command: cd dotnet && dotnet pack -c Release --include-symbols --version-suffix ${PACKAGE_VERSION}-RC-${CIRCLE_BUILD_NUM}
       - run:
           name: Push to NuGet
-          command: dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
+          command: cd dotnet && dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
   release:
     working_directory: ~/propelmarketing/referer-parser/dotnet
 
@@ -43,10 +43,10 @@ jobs:
       - run: cd dotnet
       - run:
           name: Pack
-          command: dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
+          command: cd dotnet && dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
       - run: 
           name: Push to NuGet
-          command: dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
+          command: cd dotnet && dotnet nuget push *.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
 workflows:
   version: 2
   test-pr:
