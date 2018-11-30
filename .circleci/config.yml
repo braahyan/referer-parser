@@ -3,10 +3,10 @@ jobs:
   test:
     environment:
       PATH: ${PATH}:~/.dotnet/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
-    
+
     docker:
       - image: microsoft/dotnet:2.1-sdk-stretch
-    
+
     steps:
       - checkout
       - run: cd dotnet
@@ -15,7 +15,9 @@ jobs:
           command: dotnet tool install -g dotnet-sonarscanner
       - run:
           name: Sonar Start
-          command: dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="Github" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser"
+          command: |
+            PRNUM="$(cut -d'/' -f7 <<< "$CIRCLE_PULL_REQUEST")"
+            dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="Github" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser"
       - run: 
           name: Build and Test
           command: dotnet test
@@ -31,7 +33,7 @@ jobs:
   release:
     docker:
       - image: microsoft/dotnet:2.1-sdk-stretch
-    
+
     steps:
       - checkout
       - run: cd dotnet
