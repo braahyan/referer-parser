@@ -22,7 +22,7 @@ jobs:
             dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="Github" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser"
       - run: 
           name: Build and Test
-          command: cd dotnet && dotnet test
+          command: cd dotnet && dotnet restore && dotnet build && dotnet test
       - run:
           name: Sonar End
           command: cd dotnet && dotnet-sonarscanner end  
