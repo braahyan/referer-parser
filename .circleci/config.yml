@@ -1,0 +1,71 @@
+version: 2
+jobs:
+  test:
+    working_directory: ~/propelmarketing/referer-parser
+
+    environment:
+      PATH: ${PATH}:~/.dotnet/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+    docker:
+      - image: microsoft/dotnet:2.1-sdk-stretch
+
+    steps:
+      - checkout
+      - run:
+          name: Install Java
+          command: |
+            apt-get update
+            apt-get install -y openjdk-8-jre
+      - run:
+          name: Install SonarScanner
+          command: dotnet tool install -g dotnet-sonarscanner
+      - run:
+          name: Sonar Start
+          command: |
+            cd dotnet
+            PRNUM="$(cut -d'/' -f7 <<< "$CIRCLE_PULL_REQUEST")"
+            dotnet-sonarscanner begin /k:"referer-parser" /d:sonar.login=${SONAR_TOKEN} /d:sonar.host.url="https://sonarcloud.io" /d:sonar.organization="thrivehive" /d:sonar.dotnet.excludeGeneratedCode=true /d:sonar.dotnet.visualstudio.solution.file="RefererParser.sln" /d:sonar.pullrequest.branch="${CIRCLE_BRANCH}" /d:sonar.pullrequest.base="develop" /d:sonar.pullrequest.key="${PRNUM}" /d:sonar.pullrequest.provider="GitHub" /d:sonar.pullrequest.github.repository="propelmarketing/referer-parser" /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml"
+      - run: 
+          name: Build and Test
+          command: cd dotnet && dotnet restore && dotnet build && dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      - run:
+          name: Sonar End
+          command: cd dotnet && dotnet-sonarscanner end /d:sonar.login=${SONAR_TOKEN}
+      - run: 
+          name: Package RC
+          command: cd dotnet && dotnet pack -c Release --include-symbols --version-suffix ${PACKAGE_VERSION}-RC-${CIRCLE_BUILD_NUM}
+      - run:
+          name: Push to NuGet
+          command: cd dotnet && dotnet nuget push ./RefererParser/bin/Release/* -k ${NUGET_KEY} -s ${NUGET_SRC}
+  release:
+    working_directory: ~/propelmarketing/referer-parser/dotnet
+
+    docker:
+      - image: microsoft/dotnet:2.1-sdk-stretch
+
+    steps:
+      - checkout
+      - run: cd dotnet
+      - run:
+          name: Pack
+          command: cd dotnet && dotnet pack -c Release --version-suffix ${CIRCLE_TAG}
+      - run: 
+          name: Push to NuGet
+          command: cd dotnet && dotnet nuget push ./RefererParser/bin/Release/*.nupkg -k ${NUGET_KEY} -s ${NUGET_SRC}
+workflows:
+  version: 2
+  test-pr:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore:
+                - develop
+  release-prod:
+    jobs:
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^[0-9]+(\.[0.9]+)/
