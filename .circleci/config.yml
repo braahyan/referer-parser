@@ -56,7 +56,7 @@ workflows:
   version: 2
   test-pr:
     jobs:
-      - test:
+      - test
   release-prod:
     jobs:
       - release:
